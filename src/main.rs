@@ -2,7 +2,7 @@
 
 use ::std::cell::Cell;
 
-use parse::vm::SceneVM;
+use lispr::vm::SceneVM;
 
 pub mod std;
 pub mod interpreter;

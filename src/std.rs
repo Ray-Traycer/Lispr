@@ -11,7 +11,7 @@ macro_rules! call {
                 )*
                 _ => {
                     let mutvm = unsafe{&mut (*vm)};
-                    if let Some(func) = mutvm.get_function(func_name){
+                    if let Some(func) = mutvm.get_function(&func_name.to_lowercase()){
                         if let Some(result) = func(expr_vec, vm){
                             return result;
                         }
