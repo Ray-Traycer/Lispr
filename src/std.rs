@@ -1,32 +1,43 @@
-use crate::interpreter::Type;
+use crate::vm::SceneVM;
+use crate::interpreter::types::{Type, StringType};
+
 macro_rules! call {
     ( $($f:ident),* ) => {
-        pub fn callFunc(func_name: &str, expr_vec: &mut [Type]) -> Type
+        pub fn callFunc(func_name: &str, expr_vec: &[Type], vm: *mut SceneVM) -> Type
         {
             match func_name{
                 $(
-                    stringify!($f) => $f(expr_vec),
+                    stringify!($f) => $f(expr_vec, vm),
                 )*
-                _ => Type::String("None".to_string())
+                _ => {
+                    let mutvm = unsafe{&mut (*vm)};
+                    if let Some(func) = mutvm.get_function(func_name){
+                        if let Some(result) = func(expr_vec, vm){
+                            return result;
+                        }
+                    }
+                    StringType("None".to_owned()).into()
+                }
             }
 
         }
     }
 }
 
-pub fn print(expr_vec: &mut [Type]) -> Type{
-    let print_text = expr_vec.iter_mut().map(|argument| argument.string()).collect::<Vec<String>>().join(" ");
+pub fn print(expr_vec: &[Type], vm: *mut SceneVM) -> Type{
+    let print_text = expr_vec.iter().map(|argument| argument.string(vm)).collect::<Vec<String>>().join(" ");
     println!("{}", print_text);
-    Type::String("None".to_string())
+    StringType("None".to_owned()).into()
 }
 
-pub fn Loop(expr_vec: &mut [Type]) -> Type{
-    let amount = expr_vec[0].string().parse::<usize>().unwrap();
-    let mut last = Type::String("None".to_string());
+pub fn Loop(expr_vec: &[Type], vm: *mut SceneVM) -> Type{
+    let amount = expr_vec[0].string(vm).parse::<usize>().unwrap();
+    let mut last: Type = StringType("None".to_owned()).into();
     for _ in 0..amount{
-        last = expr_vec[1].eval();
+        last = expr_vec[1].eval(vm);
     }
     last
 }
+
 
 call!(print, Loop);
