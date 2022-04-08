@@ -4,6 +4,9 @@ pub trait TypeTrait{
     fn string(&self, _vm: *mut SceneVM) -> String{
         panic!("Not implemented")
     }
+    fn as_any(&self) -> Option<&dyn Any>{
+        None
+    }
 }
 
 pub type Type = Box<dyn TypeTrait>;
@@ -117,5 +120,7 @@ impl Into<Type> for f32{
         Box::new(Number(self))
     }
 }
+
+use std::any::Any;
 
 use crate::vm::SceneVM;
