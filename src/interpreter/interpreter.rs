@@ -7,9 +7,9 @@ peg::parser!{
         rule number() -> Type
             = _ n:$(['0'..='9' | '.' | '-']+) _ { Box::new(Number(n.parse::<f32>().unwrap())) }
         rule symbol() -> Type
-        = _ n:$(['A'..='z' | '*']+) _ { Box::new(Atom(n.to_string())) }
+        = _ n:$(['A'..='z' | '*']+['0'..='9']*) _ { Box::new(Atom(n.to_string())) }
         rule string() -> Type
-            = _ "\"" n:$(['A'..='z' | ' ']+) "\"" _ { StringType(n.to_string()).into() }
+            = _ "\"" n:$(['A'..='z' | ' ']*) "\"" _ { StringType(n.to_string()).into() }
     
         pub(crate) rule parse() -> Type = precedence!{
             _ "(" _ expr:(parse()*) _ ")" _ {Expression(expr).into()}
