@@ -22,7 +22,7 @@ impl<'a> SceneVM<'a>{
         for statement in code{
             statement.eval(ptr);
         }
-        println!("done. took {}s", now.elapsed().as_secs());
+        println!("done. took {} ms", now.elapsed().as_millis());
     }
 
     pub fn get_function(&mut self, name: &str) -> Option<&mut Box<dyn 'a + FnMut(&[Type], *mut SceneVM) -> Option<Type>>>{
